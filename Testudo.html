@@ -231,20 +231,20 @@
             min-height: 28px;
         }
 
-        /* ✅ N.º Entrada: MÁS GRANDE, CENTRADO */
+        /* ✅ N.º Entrada: TAMAÑO AJUSTADO, CENTRADO */
         .dato-row.wide-input {
-            min-height: 50px;
+            min-height: 45px;
         }
 
         .dato-row.wide-input .dato-value {
-            min-height: 45px;
-            font-size: 24pt; /* ✅ TIPO MÁS GRANDE */
+            min-height: 40px;
+            font-size: 18pt; /* ✅ TAMAÑO REDUCIDO (antes 24pt) */
             font-weight: bold;
             text-align: center; /* ✅ CENTRADO */
             display: flex;
             align-items: center;
             justify-content: center;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         .dato-label {
@@ -408,7 +408,7 @@
         <div class="main-grid">
             <!-- Columna izquierda: Todos los campos -->
             <div class="datos-column">
-                <!-- N.º Entrada: MÁS GRANDE, CENTRADO, AZUL y NEGRITA -->
+                <!-- N.º Entrada: CENTRADO, AZUL y NEGRITA -->
                 <div class="dato-row wide-input">
                     <span class="dato-label">N.º Entrada:</span>
                     <span class="dato-value boxed-field auto-filled-blue" id="numero_entrada" contenteditable="true"></span>
@@ -532,8 +532,6 @@
                     
                     // ✅ FORMATO N.º Entrada: 87/26 (número/año)
                     if (elementId === 'numero_entrada') {
-                        // Si el valor ya tiene formato XX/YY, lo usa directamente
-                        // Si no, intenta convertirlo (ej: "2024-087" → "87/24")
                         element.textContent = formatNumeroEntrada(decodedValue);
                     } else {
                         element.textContent = decodedValue;
@@ -553,15 +551,24 @@
             // ===============================
             function formatNumeroEntrada(valor) {
                 // Si ya tiene formato XX/YY, lo devuelve tal cual
-                if (/^\d+\/\d+$/.test(valor)) {
+                if (/^\d+\/\d{2}$/.test(valor)) {
                     return valor;
                 }
                 
-                // Si viene como "2024-087" o similar, extrae número y año
-                const match = valor.match(/(\d+)[-\s]?(\d{4})/);
+                // Si viene como "2024-087" o "087-2024", extrae número y año
+                // Patrón 1: AAAA-NNN (ej: 2024-087)
+                let match = valor.match(/^(\d{4})[-](\d+)$/);
                 if (match) {
-                    const numero = match[1].padStart(2, '0');
-                    const year = match[2].slice(-2); // Últimos 2 dígitos del año
+                    const year = match[1].slice(-2); // Últimos 2 dígitos del año (24)
+                    const numero = match[2]; // Número de entrada (087)
+                    return `${numero}/${year}`;
+                }
+                
+                // Patrón 2: NNN-AAAA (ej: 087-2024)
+                match = valor.match(/^(\d+)[−](\d{4})$/);
+                if (match) {
+                    const numero = match[1];
+                    const year = match[2].slice(-2);
                     return `${numero}/${year}`;
                 }
                 
