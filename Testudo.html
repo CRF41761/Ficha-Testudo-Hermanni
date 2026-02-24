@@ -71,7 +71,6 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            /* ✅ TABLA: Líneas discontinuas en impresión */
             .observaciones-table th,
             .observaciones-table td {
                 border: 1px dashed #666 !important;
@@ -140,7 +139,6 @@
             display: inline;
         }
 
-        /* ✅ ESPECIE: MÁS GRANDE (antes 12pt, ahora 13pt) */
         .header .especie {
             font-size: 13pt;
             font-weight: bold;
@@ -173,6 +171,7 @@
             align-items: center;
         }
 
+        /* RECUADRO DE IMAGEN */
         .image-box {
             width: 100%;
             height: 248px;
@@ -186,11 +185,34 @@
             text-align: center;
             padding: 6px;
             flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
         }
 
-        .image-box span {
+        /* IMAGEN DENTRO DEL RECUADRO */
+        .image-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* TEXTO PLACEHOLDER (se oculta si hay imagen) */
+        .image-box .placeholder {
             display: block;
             line-height: 1.4;
+        }
+
+        .image-box.has-image .placeholder {
+            display: none;
+        }
+
+        .image-box img {
+            display: none;
+        }
+
+        .image-box.has-image img {
+            display: block;
         }
 
         /* ===============================
@@ -258,7 +280,7 @@
         }
 
         .observaciones-table th {
-            border: 1px dashed #333; /* ✅ Líneas discontinuas también en pantalla */
+            border: 1px dashed #333;
             padding: 4px 6px;
             text-align: left;
             font-weight: bold;
@@ -271,7 +293,7 @@
         }
 
         .observaciones-table td {
-            border: 1px dashed #333; /* ✅ Líneas discontinuas también en pantalla */
+            border: 1px dashed #333;
             padding: 3px 6px;
             height: 22px;
             vertical-align: top;
@@ -400,8 +422,9 @@
 
             <!-- Columna derecha: Espacio para imagen -->
             <div class="image-column">
-                <div class="image-box">
-                    <span>ESPACIO PARA<br>FOTOGRAFÍA<br>o ESQUEMA</span>
+                <div class="image-box" id="image-box">
+                    <span class="placeholder">ESPACIO PARA<br>FOTOGRAFÍA<br>o ESQUEMA</span>
+                    <img id="animal-image" src="" alt="Fotografía del animal">
                 </div>
             </div>
         </div>
@@ -452,6 +475,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // ===============================
+            // GENERAR TABLA DE OBSERVACIONES (18 filas)
+            // ===============================
             const tbody = document.getElementById('observaciones-body');
             for (let i = 0; i < 18; i++) {
                 const tr = document.createElement('tr');
@@ -462,6 +488,9 @@
                 tbody.appendChild(tr);
             }
 
+            // ===============================
+            // AUTO-RELLENADO DESDE PARÁMETROS URL
+            // ===============================
             const params = new URLSearchParams(window.location.search);
             const fieldMapping = {
                 'numero_de_entrada': 'numero_entrada',
@@ -478,7 +507,49 @@
                     element.classList.add('auto-filled');
                 }
             });
+
+            // ===============================
+            // CARGAR IMAGEN (misma carpeta que Testudo.html)
+            // ===============================
+            const numeroEntrada = params.get('numero_de_entrada');
+            const imagenUrl = params.get('imagen_url');
+            
+            const imageBox = document.getElementById('image-box');
+            const animalImage = document.getElementById('animal-image');
+            
+            // Opción 1: Si se pasa imagen_url completa
+            if (imagenUrl && imagenUrl.trim() !== '') {
+                animalImage.src = decodeURIComponent(imagenUrl);
+            }
+            // Opción 2: Imagen en la misma carpeta que Testudo.html
+            else if (numeroEntrada && numeroEntrada.trim() !== '') {
+                // BUSCA LA IMAGEN EN EL MISMO NIVEL QUE Testudo.html
+                animalImage.src = `./${numeroEntrada}.jpg`;
+            }
+            
+            // Manejo de carga/error de imagen
+            animalImage.onerror = function() {
+                imageBox.classList.remove('has-image');
+            };
+            animalImage.onload = function() {
+                imageBox.classList.add('has-image');
+            };
         });
     </script>
+    <!-- ✅ INDICADOR DE IMPRESIÓN (Visual hasta cerrar pestaña) -->
+<script>
+  const btnImprimir = document.querySelector('.btn-print');
+  
+  if (btnImprimir) {
+    btnImprimir.addEventListener('click', function() {
+      // ✅ Cambiar a VERDE permanentemente (hasta recargar/cerrar)
+      this.style.background = '#22c55e';
+      this.innerHTML = '✅ ¡Impresa!';
+      
+      // ✅ NO hay setTimeout → Se queda verde hasta que cierres la pestaña
+      // ✅ NO hay sessionStorage → Si recargas o vuelves a abrir, sale azul
+    });
+  }
+</script>
 </body>
 </html>
