@@ -51,11 +51,16 @@
             .boxed-field {
                 border: 1px dashed #666 !important;
             }
-            .auto-filled {
+            /* ✅ SOLO N.º Entrada en azul, el resto en negro */
+            .auto-filled-blue {
                 color: #0066cc !important;
                 font-weight: bold !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            .auto-filled-black {
+                color: #000 !important;
+                font-weight: normal !important;
             }
             input, textarea {
                 border: none !important;
@@ -189,10 +194,12 @@
             position: relative;
         }
 
-        /* IMAGEN DENTRO DEL RECUADRO */
+        /* ✅ IMAGEN MÁS GRANDE */
         .image-box img {
             max-width: 100%;
             max-height: 100%;
+            min-width: 80%;
+            min-height: 80%;
             object-fit: contain;
             display: block;
         }
@@ -256,9 +263,16 @@
             min-height: 22px;
         }
 
-        .auto-filled {
+        /* ✅ N.º Entrada: AZUL y NEGRITA */
+        .auto-filled-blue {
             color: #0066cc;
             font-weight: bold;
+        }
+
+        /* ✅ Otros campos auto-rellenados: NEGRO */
+        .auto-filled-black {
+            color: #000;
+            font-weight: normal;
         }
 
         /* ===============================
@@ -386,17 +400,17 @@
                 <!-- N.º Entrada: MÁS ALTO, AZUL y NEGRITA -->
                 <div class="dato-row wide-input">
                     <span class="dato-label">N.º Entrada:</span>
-                    <span class="dato-value boxed-field auto-filled" id="numero_entrada" contenteditable="true"></span>
+                    <span class="dato-value boxed-field auto-filled-blue" id="numero_entrada" contenteditable="true"></span>
                 </div>
 
                 <div class="dato-row">
                     <span class="dato-label">Fecha de Entrada:</span>
-                    <span class="dato-value manual-field auto-filled" id="fecha_entrada" contenteditable="true"></span>
+                    <span class="dato-value manual-field auto-filled-black" id="fecha_entrada" contenteditable="true"></span>
                 </div>
 
                 <div class="dato-row">
                     <span class="dato-label">Localidad de procedencia:</span>
-                    <span class="dato-value manual-field auto-filled" id="localidad" contenteditable="true"></span>
+                    <span class="dato-value manual-field auto-filled-black" id="localidad" contenteditable="true"></span>
                 </div>
 
                 <div class="dato-row">
@@ -416,7 +430,7 @@
 
                 <div class="dato-row">
                     <span class="dato-label">Causa de entrada:</span>
-                    <span class="dato-value manual-field auto-filled" id="causa_entrada" contenteditable="true"></span>
+                    <span class="dato-value manual-field auto-filled-black" id="causa_entrada" contenteditable="true"></span>
                 </div>
             </div>
 
@@ -504,7 +518,12 @@
                 const element = document.getElementById(elementId);
                 if (value && value.trim() !== '') {
                     element.textContent = decodeURIComponent(value);
-                    element.classList.add('auto-filled');
+                    // ✅ N.º Entrada en AZUL, el resto en NEGRO
+                    if (elementId === 'numero_entrada') {
+                        element.classList.add('auto-filled-blue');
+                    } else {
+                        element.classList.add('auto-filled-black');
+                    }
                 }
             });
 
@@ -523,7 +542,6 @@
             }
             // Opción 2: Imagen en la misma carpeta que Testudo.html
             else if (numeroEntrada && numeroEntrada.trim() !== '') {
-                // BUSCA LA IMAGEN EN EL MISMO NIVEL QUE Testudo.html
                 animalImage.src = `./${numeroEntrada}.jpg`;
             }
             
