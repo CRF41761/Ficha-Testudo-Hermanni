@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Testudo hermanni - CRF La Granja</title>
+    <style>
+        /* ===============================
+           CONFIGURACIÓN GENERAL
+           =============================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.3;
+            color: #000;
+            background: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ===============================
+           FORMATO A4 PARA IMPRESIÓN
+           =============================== */
+        @page {
+            size: A4 portrait;
+            margin: 1.3cm;
+        }
+
+        @media print {
+            body { background: #fff !important; }
+            .no-print { display: none !important; }
+            .a4-wrap {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+            .manual-field, .boxed-field {
+                border: none !important;
+                background: transparent !important;
+            }
+            .boxed-field {
+                border: 1px dashed #666 !important;
+            }
+            .auto-filled {
+                color: #0066cc !important;
+                font-weight: bold !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            input, textarea {
+                border: none !important;
+                background: none !important;
+            }
+            .observaciones-table th {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .observaciones-table tr:nth-child(even) {
+                background: #fafafa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            /* ✅ TABLA: Líneas discontinuas en impresión */
+            .observaciones-table th,
+            .observaciones-table td {
+                border: 1px dashed #666 !important;
+            }
+        }
+
+        @media screen {
+            body {
+                background: #f5f5f5;
+                padding: 20px;
+            }
+            .a4-wrap {
+                max-width: 185mm;
+                min-height: 260mm;
+                margin: 0 auto;
+                background: #fff;
+                padding: 1.3cm;
+                border: 1px solid #ccc;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                position: relative;
+            }
+            .btn-print {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background: #7eb8da;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                transition: background 0.2s;
+                z-index: 1000;
+            }
+            .btn-print:hover {
+                background: #6aa8ca;
+            }
+        }
+
+        /* ===============================
+           CONTENEDOR PRINCIPAL
+           =============================== */
+        .a4-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding-top: 25px;
+        }
+
+        /* Header: FICHA + Especie centrados */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline;
+        }
+
+        /* ✅ ESPECIE: MÁS GRANDE (antes 12pt, ahora 13pt) */
+        .header .especie {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #0066cc;
+            letter-spacing: 0.3px;
+            margin-left: 8px;
+        }
+
+        /* ===============================
+           GRID PRINCIPAL: Columna datos + Imagen
+           =============================== */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.1fr;
+            gap: 0 18px;
+            margin-bottom: 10px;
+            align-items: start;
+        }
+
+        .datos-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .image-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-box {
+            width: 100%;
+            height: 248px;
+            border: 1px solid #ccc;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 8pt;
+            text-align: center;
+            padding: 6px;
+            flex-shrink: 0;
+        }
+
+        .image-box span {
+            display: block;
+            line-height: 1.4;
+        }
+
+        /* ===============================
+           CAMPOS DE DATOS
+           =============================== */
+        .dato-row {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            min-height: 28px;
+        }
+
+        .dato-row.wide-input .dato-value {
+            min-height: 35px;
+        }
+
+        .dato-label {
+            font-weight: bold;
+            font-size: 10pt;
+            white-space: nowrap;
+            min-width: 145px;
+            flex-shrink: 0;
+        }
+
+        .dato-value {
+            flex: 1;
+            padding: 2px 5px;
+            min-height: 22px;
+        }
+
+        .boxed-field {
+            border: 1px dashed #333;
+            padding: 2px 6px;
+            background: #fff;
+            min-height: 22px;
+        }
+
+        .manual-field {
+            border-bottom: 1px solid #333;
+            padding: 2px 4px;
+            min-height: 22px;
+        }
+
+        .auto-filled {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        /* ===============================
+           TABLA DE OBSERVACIONES
+           =============================== */
+        .observaciones-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 8px 0;
+        }
+
+        .observaciones-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            margin: 0;
+            flex: 1;
+        }
+
+        .observaciones-table th {
+            border: 1px dashed #333; /* ✅ Líneas discontinuas también en pantalla */
+            padding: 4px 6px;
+            text-align: left;
+            font-weight: bold;
+            background: #f0f0f0;
+            height: 26px;
+        }
+
+        .observaciones-table th:first-child { 
+            width: 18%;
+        }
+
+        .observaciones-table td {
+            border: 1px dashed #333; /* ✅ Líneas discontinuas también en pantalla */
+            padding: 3px 6px;
+            height: 22px;
+            vertical-align: top;
+        }
+
+        .observaciones-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* ===============================
+           SECCIÓN DE SALIDA (2 columnas)
+           =============================== */
+        .salida-section {
+            display: grid;
+            grid-template-columns: 1.5fr 1.2fr;
+            gap: 8px 20px;
+            padding-top: 8px;
+            border-top: 2px solid #333;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+
+        .salida-left, .salida-right {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .salida-row {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            min-height: 28px;
+        }
+
+        .salida-label {
+            font-weight: bold;
+            font-size: 10pt;
+            white-space: nowrap;
+            min-width: 120px;
+            flex-shrink: 0;
+        }
+
+        .salida-value {
+            flex: 1;
+            border-bottom: 1px solid #333;
+            padding: 2px 4px;
+            min-height: 22px;
+        }
+
+        .salida-value.boxed {
+            border: 1px dashed #333;
+            padding: 2px 6px;
+            background: #fff;
+            min-width: 180px;
+            min-height: 40px;
+        }
+
+        /* ===============================
+           UTILIDADES
+           =============================== */
+        [contenteditable="true"]:focus {
+            outline: 1px dotted #1976d2;
+            background: #f0f7ff;
+        }
+
+        @media print {
+            [contenteditable="true"]:focus {
+                outline: none;
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="a4-wrap">
+        <!-- Botón de imprimir -->
+        <button class="btn-print no-print" onclick="window.print()">🖨️ Imprimir</button>
+
+        <!-- Header: Título centrado -->
+        <header class="header">
+            <h1>FICHA</h1>
+            <span class="especie">Testudo hermanni hermanni</span>
+        </header>
+
+        <!-- Grid principal: Datos + Imagen -->
+        <div class="main-grid">
+            <!-- Columna izquierda: Todos los campos -->
+            <div class="datos-column">
+                <!-- N.º Entrada: MÁS ALTO, AZUL y NEGRITA -->
+                <div class="dato-row wide-input">
+                    <span class="dato-label">N.º Entrada:</span>
+                    <span class="dato-value boxed-field auto-filled" id="numero_entrada" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Fecha de Entrada:</span>
+                    <span class="dato-value manual-field auto-filled" id="fecha_entrada" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Localidad de procedencia:</span>
+                    <span class="dato-value manual-field auto-filled" id="localidad" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Edad:</span>
+                    <span class="dato-value manual-field" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Sexo:</span>
+                    <span class="dato-value manual-field" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Peso:</span>
+                    <span class="dato-value manual-field" contenteditable="true"></span>
+                </div>
+
+                <div class="dato-row">
+                    <span class="dato-label">Causa de entrada:</span>
+                    <span class="dato-value manual-field auto-filled" id="causa_entrada" contenteditable="true"></span>
+                </div>
+            </div>
+
+            <!-- Columna derecha: Espacio para imagen -->
+            <div class="image-column">
+                <div class="image-box">
+                    <span>ESPACIO PARA<br>FOTOGRAFÍA<br>o ESQUEMA</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Observaciones (18 filas) -->
+        <div class="observaciones-section">
+            <table class="observaciones-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody id="observaciones-body">
+                    <!-- 18 filas generadas por JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sección de Salida (2 columnas) -->
+        <section class="salida-section">
+            <div class="salida-left">
+                <div class="salida-row">
+                    <span class="salida-label">Tipo de salida:</span>
+                    <span class="salida-value manual-field" contenteditable="true"></span>
+                </div>
+                <div class="salida-row">
+                    <span class="salida-label">Lugar de liberación:</span>
+                    <span class="salida-value manual-field" contenteditable="true"></span>
+                </div>
+                <div class="salida-row">
+                    <span class="salida-label">Fecha de salida:</span>
+                    <span class="salida-value manual-field" contenteditable="true" placeholder="dd/mm/aaaa"></span>
+                </div>
+            </div>
+            <div class="salida-right">
+                <div class="salida-row">
+                    <span class="salida-label">N.º Marca:</span>
+                    <span class="salida-value boxed" contenteditable="true"></span>
+                </div>
+                <div class="salida-row">
+                    <span class="salida-label">Otras Marcas:</span>
+                    <span class="salida-value boxed" contenteditable="true"></span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('observaciones-body');
+            for (let i = 0; i < 18; i++) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="manual-field" contenteditable="true"></td>
+                    <td class="manual-field" contenteditable="true"></td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const fieldMapping = {
+                'numero_de_entrada': 'numero_entrada',
+                'fecha_entrada_manual': 'fecha_entrada',
+                'municipio': 'localidad',
+                'causa_entrada': 'causa_entrada'
+            };
+
+            Object.entries(fieldMapping).forEach(([param, elementId]) => {
+                const value = params.get(param);
+                const element = document.getElementById(elementId);
+                if (value && value.trim() !== '') {
+                    element.textContent = decodeURIComponent(value);
+                    element.classList.add('auto-filled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
