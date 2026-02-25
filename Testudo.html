@@ -529,7 +529,34 @@
                 const element = document.getElementById(elementId);
                 if (value && value.trim() !== '') {
                     const decodedValue = decodeURIComponent(value);
-                    
+                                // ===============================
+            // RELLENAR PRIMERA FILA DE OBSERVACIONES (desde URL params)
+            // ===============================
+            const obsFecha = params.get('observaciones_fecha');
+            const obsTexto = params.get('observaciones_texto');
+            
+            if (obsFecha || obsTexto) {
+                const firstRow = tbody.querySelector('tr:first-child');
+                if (firstRow) {
+                    const celdas = firstRow.querySelectorAll('td');
+                    if (celdas.length >= 2) {
+                        if (obsFecha) {
+                            try {
+                                celdas[0].textContent = decodeURIComponent(obsFecha);
+                            } catch (e) {
+                                celdas[0].textContent = obsFecha;
+                            }
+                        }
+                        if (obsTexto) {
+                            try {
+                                celdas[1].textContent = decodeURIComponent(obsTexto);
+                            } catch (e) {
+                                celdas[1].textContent = obsTexto;
+                            }
+                        }
+                    }
+                }
+            }
                     // ✅ FORMATO N.º Entrada: 87/26 (número/año)
                     if (elementId === 'numero_entrada') {
                         element.textContent = formatNumeroEntrada(decodedValue);
