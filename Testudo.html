@@ -576,23 +576,14 @@
                 return valor;
             }
 
+                       // ===============================
+            // CARGAR IMAGEN GENÉRICA (misma para todas las fichas Testudo)
             // ===============================
-            // CARGAR IMAGEN (misma carpeta que Testudo.html)
-            // ===============================
-            const numeroEntrada = params.get('numero_de_entrada');
-            const imagenUrl = params.get('imagen_url');
-            
             const imageBox = document.getElementById('image-box');
             const animalImage = document.getElementById('animal-image');
             
-            // Opción 1: Si se pasa imagen_url completa
-            if (imagenUrl && imagenUrl.trim() !== '') {
-                animalImage.src = decodeURIComponent(imagenUrl);
-            }
-            // Opción 2: Imagen en la misma carpeta que Testudo.html
-            else if (numeroEntrada && numeroEntrada.trim() !== '') {
-                animalImage.src = `./${numeroEntrada}.jpg`;
-            }
+            // ✅ Siempre carga la misma imagen de referencia
+            animalImage.src = './testudo-referencia.jpg';
             
             // Manejo de carga/error de imagen
             animalImage.onerror = function() {
